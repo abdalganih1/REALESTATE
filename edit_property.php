@@ -32,18 +32,48 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $property) {
     $floor = $_POST['floor'];
     $parking = $_POST['parking'];
     $description = $_POST['description'];
-    $image_url = $_POST['image_url'];
 
-    if (update_property($property['id'], $type, $price, $location, $bedrooms, $bathrooms, $area, $floor, $parking, $description, $image_url)) {
-        $message = 'Property updated successfully!';
-        $message_type = 'success';
-        // Refresh property data after update
+    $image_url_to_save = $property['image_url']; // Keep existing image by default
+
+    // Check if a new image file was uploaded
+    if (isset($_FILES['image_upload']) && $_FILES['image_upload']['error'] === UPLOAD_ERR_OK) {
+        $uploaded_path = upload_image($_FILES['image_upload']);
+        if ($uploaded_path) {
+            // If a new image is successfully uploaded, delete the old one if it's not the default
+            if ($property['image_url'] != 'assets/images/default-property.jpg' && file_exists($property['image_url'])) {
+                unlink($property['image_url']);
+            }
+            $image_url_to_save = $uploaded_path;
+        } else {
+            $message = 'Error uploading new image. Keeping the old image. Please ensure it\'s a JPG, PNG, or GIF file, and less than 5MB.';
+            $message_type = 'warning';
+        }
+    } elseif (isset($_FILES['image_upload']) && $_FILES['image_upload']['error'] !== UPLOAD_ERR_NO_FILE) {
+        // Handle other upload errors even if no specific file was selected (e.g., too large from php.ini)
+        $message = 'An unexpected error occurred during image upload. Keeping the old image.';
+        $message_type = 'warning';
+    }
+    // If no file was selected or specific upload error, $image_url_to_save remains the old one.
+
+    if (update_property($property['id'], $type, $price, $location, $bedrooms, $bathrooms, $area, $floor, $parking, $description, $image_url_to_save)) {
+        // If image upload failed but property updated, combine messages
+        if ($message_type == 'warning') {
+            $message .= '<br>Property details updated successfully.';
+            $message_type = 'success'; // Change to success if other details updated
+        } else {
+            $message = 'Property updated successfully!';
+            $message_type = 'success';
+        }
+        // Refresh property data after update to show latest changes including image URL
         $property = get_property_by_id($property['id']);
     } else {
-        $message = 'Error updating property. Please try again.';
+        $message = 'Error updating property details. Please try again.';
         $message_type = 'danger';
     }
 }
+
+// Get property types for the dropdown
+$property_types = get_property_types();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -78,6 +108,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $property) {
         .btn-primary:hover {
             background-color: #e04a1f;
             border-color: #e04a1f;
+        }
+        .image-preview {
+            width: 150px;
+            height: 100px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: block;
         }
     </style>
 </head>
@@ -152,17 +191,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $property) {
             </div>
         <?php endif; ?>
         <?php if ($property): ?>
-        <form action="edit_property.php?id=<?php echo $property['id']; ?>" method="POST">
+        <form action="edit_property.php?id=<?php echo $property['id']; ?>" method="POST" enctype="multipart/form-data">
             <div class="row">
                 <div class="col-lg-6">
                     <div class="form-group">
                         <label for="type">Property Type</label>
                         <select class="form-control" id="type" name="type" required>
-                            <option value="Luxury Villa" <?php echo ($property['type'] == 'Luxury Villa') ? 'selected' : ''; ?>>Luxury Villa</option>
-                            <option value="Apartment" <?php echo ($property['type'] == 'Apartment') ? 'selected' : ''; ?>>Apartment</option>
-                            <option value="Penthouse" <?php echo ($property['type'] == 'Penthouse') ? 'selected' : ''; ?>>Penthouse</option>
-                            <option value="Villa House" <?php echo ($property['type'] == 'Villa House') ? 'selected' : ''; ?>>Villa House</option>
-                            <option value="Modern Condo" <?php echo ($property['type'] == 'Modern Condo') ? 'selected' : ''; ?>>Modern Condo</option>
+                            <?php foreach ($property_types as $type_option): ?>
+                                <option value="<?php echo htmlspecialchars($type_option['type_name']); ?>" <?php echo ($property['type'] == $type_option['type_name']) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($type_option['type_name']); ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="form-group">
@@ -196,9 +235,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $property) {
                         <input type="text" class="form-control" id="parking" name="parking" value="<?php echo htmlspecialchars($property['parking']); ?>" required>
                     </div>
                     <div class="form-group">
-                        <label for="image_url">Image File Name (e.g., assets/images/property-07.jpg)</label>
-                        <input type="text" class="form-control" id="image_url" name="image_url" value="<?php echo htmlspecialchars($property['image_url']); ?>" required>
-                        <small class="form-text text-muted">Ensure this file exists in your assets/images folder.</small>
+                        <label>Current Image Preview</label>
+                        <?php if ($property['image_url']): ?>
+                            <img src="<?php echo htmlspecialchars($property['image_url']); ?>" alt="Current Property Image" class="image-preview">
+                        <?php else: ?>
+                            <p>No image currently set.</p>
+                        <?php endif; ?>
+                        <label for="image_upload">Upload New Image (Optional)</label>
+                        <input type="file" class="form-control" id="image_upload" name="image_upload" accept="image/*">
+                        <small class="form-text text-muted">Max 5MB (JPG, PNG, GIF). Uploading a new image will replace the current one.</small>
                     </div>
                 </div>
                 <div class="col-lg-12">

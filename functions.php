@@ -57,6 +57,37 @@ function get_user_role() {
     return isset($_SESSION['role']) ? $_SESSION['role'] : null;
 }
 
+// Property Type Management Functions (New)
+function get_property_types() {
+    global $conn;
+    $sql = "SELECT * FROM property_types ORDER BY type_name ASC";
+    $result = mysqli_query($conn, $sql);
+    $types = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $types[] = $row;
+    }
+    return $types;
+}
+
+function add_property_type_db($type_name) {
+    global $conn;
+    $type_name = sanitize_input($type_name);
+    // Use INSERT IGNORE to prevent adding duplicate types
+    $sql = "INSERT IGNORE INTO property_types (type_name) VALUES ('$type_name')";
+    return mysqli_query($conn, $sql);
+}
+
+function delete_property_type_db($id) {
+    global $conn;
+    $id = (int)$id;
+    // IMPORTANT: Consider what happens to properties of this type.
+    // For simplicity, this will just delete the type from the list.
+    // Existing properties will still have the 'type' value stored as VARCHAR.
+    $sql = "DELETE FROM property_types WHERE id = $id";
+    return mysqli_query($conn, $sql);
+}
+
+
 // Property Management Functions (Admin)
 function add_property($type, $price, $location, $bedrooms, $bathrooms, $area, $floor, $parking, $description, $image_url) {
     global $conn;
@@ -215,5 +246,41 @@ function get_contact_messages() {
         $messages[] = $row;
     }
     return $messages;
+}
+
+// Function to handle image uploads
+function upload_image($file_array, $target_dir = 'assets/images/') {
+    if ($file_array['error'] === UPLOAD_ERR_NO_FILE) {
+        return null; // No file uploaded
+    }
+    if ($file_array['error'] !== UPLOAD_ERR_OK) {
+        // Return false for any other upload error (e.g., size, partial upload)
+        error_log("File upload error: " . $file_array['error']);
+        return false;
+    }
+
+    $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+    $max_size = 5 * 1024 * 1024; // 5 MB
+
+    if (!in_array($file_array['type'], $allowed_types)) {
+        error_log("Invalid file type: " . $file_array['type']);
+        return false; // Invalid file type
+    }
+    if ($file_array['size'] > $max_size) {
+        error_log("File too large: " . $file_array['size']);
+        return false; // File too large
+    }
+
+    $file_ext = strtolower(pathinfo($file_array['name'], PATHINFO_EXTENSION));
+    // Generate a unique file name to prevent conflicts
+    $new_file_name = 'property_' . uniqid() . '.' . $file_ext;
+    $target_file = $target_dir . $new_file_name;
+
+    if (move_uploaded_file($file_array['tmp_name'], $target_file)) {
+        return $target_file; // Return relative path
+    } else {
+        error_log("Failed to move uploaded file to: " . $target_file);
+        return false; // Failed to move file
+    }
 }
 ?>

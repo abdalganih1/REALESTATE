@@ -2,6 +2,9 @@
 require_once 'functions.php';
 // يمكنك إضافة منطق خاص بالصفحة الرئيسية هنا إذا لزم الأمر
 $properties = get_properties(); // جلب العقارات لعرضها في قسم Properties
+
+// Get property types for the properties section filter
+$property_types = get_property_types();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -128,7 +131,7 @@ $properties = get_properties(); // جلب العقارات لعرضها في ق�
         <div class="col-lg-5">
           <div class="section-heading">
             <h6>| Featured</h6>
-            <h2>Best Apartment &amp; Sea view</h2>
+            <h2>Best Apartment & Sea view</h2>
           </div>
           <div class="accordion" id="accordionExample">
             <div class="accordion-item">

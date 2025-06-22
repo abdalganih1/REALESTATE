@@ -122,6 +122,7 @@ if (!check_login() || !is_admin()) {
                 <ul class="dashboard-menu">
                     <li><a href="add_property.php"><i class="fa fa-plus-circle"></i> Add New Property</a></li>
                     <li><a href="manage_properties.php"><i class="fa fa-home"></i> Manage Properties</a></li>
+                    <li><a href="manage_property_types.php"><i class="fa fa-tags"></i> Manage Property Types</a></li> <!-- New Link -->
                     <li><a href="view_orders.php"><i class="fa fa-clipboard-list"></i> View All Orders</a></li>
                     <li><a href="view_messages.php"><i class="fa fa-envelope"></i> View Contact Messages</a></li>
                 </ul>

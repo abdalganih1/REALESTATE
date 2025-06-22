@@ -7,6 +7,9 @@ $max_price = $_GET['max_price'] ?? null;
 $location_search = $_GET['location'] ?? '';
 
 $properties = get_properties($search_type, $min_price, $max_price, $location_search);
+
+// Get property types for the filter dropdown and list
+$property_types = get_property_types();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -124,11 +127,11 @@ $properties = get_properties($search_type, $min_price, $max_price, $location_sea
                         <label class="visually-hidden" for="type">Property Type</label>
                         <select class="form-select" id="type" name="type">
                             <option value="Show All" <?php echo ($search_type == 'Show All' || $search_type == '') ? 'selected' : ''; ?>>Show All</option>
-                            <option value="Apartment" <?php echo ($search_type == 'Apartment') ? 'selected' : ''; ?>>Apartment</option>
-                            <option value="Villa House" <?php echo ($search_type == 'Villa House') ? 'selected' : ''; ?>>Villa House</option>
-                            <option value="Penthouse" <?php echo ($search_type == 'Penthouse') ? 'selected' : ''; ?>>Penthouse</option>
-                            <option value="Luxury Villa" <?php echo ($search_type == 'Luxury Villa') ? 'selected' : ''; ?>>Luxury Villa</option>
-                            <option value="Modern Condo" <?php echo ($search_type == 'Modern Condo') ? 'selected' : ''; ?>>Modern Condo</option>
+                            <?php foreach ($property_types as $type_option): ?>
+                                <option value="<?php echo htmlspecialchars($type_option['type_name']); ?>" <?php echo ($search_type == $type_option['type_name']) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($type_option['type_name']); ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="col-sm-2">
@@ -151,15 +154,14 @@ $properties = get_properties($search_type, $min_price, $max_price, $location_sea
         <li>
           <a class="is_active" href="properties.php" data-filter="*">Show All</a>
         </li>
-        <li>
-          <a href="properties.php?type=Apartment" data-filter=".adv">Apartment</a>
-        </li>
-        <li>
-          <a href="properties.php?type=Villa House" data-filter=".str">Villa House</a>
-        </li>
-        <li>
-          <a href="properties.php?type=Penthouse" data-filter=".rac">Penthouse</a>
-        </li>
+        <?php foreach ($property_types as $type_option): ?>
+            <li>
+                <a href="properties.php?type=<?php echo urlencode($type_option['type_name']); ?>" 
+                   data-filter=".<?php echo strtolower(str_replace(' ', '', $type_option['type_name'])); ?>">
+                    <?php echo htmlspecialchars($type_option['type_name']); ?>
+                </a>
+            </li>
+        <?php endforeach; ?>
       </ul>
       <div class="row properties-box">
         <?php if (!empty($properties)): ?>

@@ -19,16 +19,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $floor = $_POST['floor'];
     $parking = $_POST['parking'];
     $description = $_POST['description'];
-    $image_url = $_POST['image_url']; // Assuming user inputs image file name/path directly
 
-    if (add_property($type, $price, $location, $bedrooms, $bathrooms, $area, $floor, $parking, $description, $image_url)) {
-        $message = 'Property added successfully!';
-        $message_type = 'success';
+    $image_url_to_save = 'assets/images/default-property.jpg'; // Default image
+
+    // Check if an image file was uploaded
+    if (isset($_FILES['image_upload']) && $_FILES['image_upload']['error'] === UPLOAD_ERR_OK) {
+        $uploaded_path = upload_image($_FILES['image_upload']);
+        if ($uploaded_path) {
+            $image_url_to_save = $uploaded_path;
+        } else {
+            $message = 'Error uploading image. Please ensure it\'s a JPG, PNG, or GIF file, and less than 5MB.';
+            $message_type = 'warning'; // Use warning as property might still be added with default image
+        }
+    }
+
+    if (add_property($type, $price, $location, $bedrooms, $bathrooms, $area, $floor, $parking, $description, $image_url_to_save)) {
+        // If image upload failed but property added, combine messages
+        if ($message_type == 'warning') {
+            $message .= '<br>Property added successfully with a default image.';
+            $message_type = 'success';
+        } else {
+            $message = 'Property added successfully!';
+            $message_type = 'success';
+        }
     } else {
-        $message = 'Error adding property. Please try again.';
+        $message = 'Error adding property to database. Please try again.';
         $message_type = 'danger';
     }
 }
+
+// Get property types for the dropdown
+$property_types = get_property_types();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -136,18 +157,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <?php echo $message; ?>
             </div>
         <?php endif; ?>
-        <form action="add_property.php" method="POST">
+        <form action="add_property.php" method="POST" enctype="multipart/form-data">
             <div class="row">
                 <div class="col-lg-6">
                     <div class="form-group">
                         <label for="type">Property Type</label>
                         <select class="form-control" id="type" name="type" required>
                             <option value="">Select Type</option>
-                            <option value="Luxury Villa">Luxury Villa</option>
-                            <option value="Apartment">Apartment</option>
-                            <option value="Penthouse">Penthouse</option>
-                            <option value="Villa House">Villa House</option>
-                            <option value="Modern Condo">Modern Condo</option>
+                            <?php foreach ($property_types as $type_option): ?>
+                                <option value="<?php echo htmlspecialchars($type_option['type_name']); ?>"><?php echo htmlspecialchars($type_option['type_name']); ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="form-group">
@@ -181,9 +200,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <input type="text" class="form-control" id="parking" name="parking" placeholder="e.g., 6 spots or 2 cars" required>
                     </div>
                     <div class="form-group">
-                        <label for="image_url">Image File Name (e.g., assets/images/property-07.jpg)</label>
-                        <input type="text" class="form-control" id="image_url" name="image_url" value="assets/images/default-property.jpg" required>
-                        <small class="form-text text-muted">Ensure this file exists in your assets/images folder.</small>
+                        <label for="image_upload">Upload Image</label>
+                        <input type="file" class="form-control" id="image_upload" name="image_upload" accept="image/*">
+                        <small class="form-text text-muted">Max 5MB (JPG, PNG, GIF). If no image is uploaded, a default will be used.</small>
                     </div>
                 </div>
                 <div class="col-lg-12">
