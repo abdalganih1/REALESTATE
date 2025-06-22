@@ -1,3 +1,13 @@
+<?php
+require_once 'functions.php';
+
+$search_type = $_GET['type'] ?? '';
+$min_price = $_GET['min_price'] ?? null;
+$max_price = $_GET['max_price'] ?? null;
+$location_search = $_GET['location'] ?? '';
+
+$properties = get_properties($search_type, $min_price, $max_price, $location_search);
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,12 +17,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <title>Villa Agency - Property Listing by TemplateMo</title>
+    <title> Real Estate - Properties </title>
 
-    
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-    
     <link rel="stylesheet" href="assets/css/fontawesome.css">
     <link rel="stylesheet" href="assets/css/templatemo-villa-agency.css">
     <link rel="stylesheet" href="assets/css/owl.css">
@@ -22,7 +29,6 @@
   </head>
 
 <body>
-
 
   <div id="js-preloader" class="js-preloader">
     <div class="preloader-inner">
@@ -34,7 +40,6 @@
       </div>
     </div>
   </div>
-
 
   <div class="sub-header">
     <div class="container">
@@ -63,16 +68,25 @@
             <div class="col-12">
                 <nav class="main-nav">
                    
-                    <a href="index.html" class="logo">
+                    <a href="index.php" class="logo">
                         <h1>Villa</h1>
                     </a>
                     
                     <ul class="nav">
-                      <li><a href="index.html">Home</a></li>
-                      <li><a href="properties.html" class="active">Properties</a></li>
+                      <li><a href="index.php">Home</a></li>
+                      <li><a href="properties.php" class="active">Properties</a></li>
                      
-                      <li><a href="contact.html">Contact Us</a></li>
-                      <li><a href="#"><i class="fa fa-calendar"></i> New Apartment</a></li>
+                      <li><a href="contact.php">Contact Us</a></li>
+                      <?php if (!check_login()): ?>
+                        <li><a href="login.php"><i class="fa fa-user"></i> Login / Register</a></li>
+                      <?php else: ?>
+                        <?php if (is_admin()): ?>
+                            <li><a href="admin_dashboard.php"><i class="fa fa-cog"></i> Admin Dashboard</a></li>
+                        <?php else: ?>
+                            <li><a href="my_orders.php"><i class="fa fa-list"></i> My Orders</a></li>
+                        <?php endif; ?>
+                        <li><a href="logout.php"><i class="fa fa-sign-out-alt"></i> Logout (<?php echo $_SESSION['username']; ?>)</a></li>
+                      <?php endif; ?>
                   </ul>   
                     <a class='menu-trigger'>
                         <span>Menu</span>
@@ -98,186 +112,86 @@
 
   <div class="section properties">
     <div class="container">
+        <!-- Smart Search Form -->
+        <div class="row mb-5">
+            <div class="col-lg-12">
+                <form action="properties.php" method="GET" class="row gx-3 gy-2 align-items-center">
+                    <div class="col-sm-3">
+                        <label class="visually-hidden" for="location">Location</label>
+                        <input type="text" class="form-control" id="location" name="location" placeholder="Search by Location" value="<?php echo htmlspecialchars($location_search); ?>">
+                    </div>
+                    <div class="col-sm-3">
+                        <label class="visually-hidden" for="type">Property Type</label>
+                        <select class="form-select" id="type" name="type">
+                            <option value="Show All" <?php echo ($search_type == 'Show All' || $search_type == '') ? 'selected' : ''; ?>>Show All</option>
+                            <option value="Apartment" <?php echo ($search_type == 'Apartment') ? 'selected' : ''; ?>>Apartment</option>
+                            <option value="Villa House" <?php echo ($search_type == 'Villa House') ? 'selected' : ''; ?>>Villa House</option>
+                            <option value="Penthouse" <?php echo ($search_type == 'Penthouse') ? 'selected' : ''; ?>>Penthouse</option>
+                            <option value="Luxury Villa" <?php echo ($search_type == 'Luxury Villa') ? 'selected' : ''; ?>>Luxury Villa</option>
+                            <option value="Modern Condo" <?php echo ($search_type == 'Modern Condo') ? 'selected' : ''; ?>>Modern Condo</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-2">
+                        <label class="visually-hidden" for="min_price">Min Price</label>
+                        <input type="number" class="form-control" id="min_price" name="min_price" placeholder="Min Price" value="<?php echo htmlspecialchars($min_price); ?>">
+                    </div>
+                    <div class="col-sm-2">
+                        <label class="visually-hidden" for="max_price">Max Price</label>
+                        <input type="number" class="form-control" id="max_price" name="max_price" placeholder="Max Price" value="<?php echo htmlspecialchars($max_price); ?>">
+                    </div>
+                    <div class="col-sm-2">
+                        <button type="submit" class="btn btn-primary w-100">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- End Smart Search Form -->
+
       <ul class="properties-filter">
         <li>
-          <a class="is_active" href="#!" data-filter="*">Show All</a>
+          <a class="is_active" href="properties.php" data-filter="*">Show All</a>
         </li>
         <li>
-          <a href="#!" data-filter=".adv">Apartment</a>
+          <a href="properties.php?type=Apartment" data-filter=".adv">Apartment</a>
         </li>
         <li>
-          <a href="#!" data-filter=".str">Villa House</a>
+          <a href="properties.php?type=Villa House" data-filter=".str">Villa House</a>
         </li>
         <li>
-          <a href="#!" data-filter=".rac">Penthouse</a>
+          <a href="properties.php?type=Penthouse" data-filter=".rac">Penthouse</a>
         </li>
       </ul>
       <div class="row properties-box">
-        <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 adv">
-          <div class="item">
-            <a href="property-details.html"><img src="assets/images/property-01.jpg" alt=""></a>
-            <span class="category">Luxury Villa</span>
-            <h6>$2.264.000</h6>
-            <h4><a href="property-details.html">HAMA,ALBRNAWE</a></h4>
-            <ul>
-              <li>Bedrooms: <span>8</span></li>
-              <li>Bathrooms: <span>8</span></li>
-              <li>Area: <span>545m2</span></li>
-              <li>Floor: <span>3</span></li>
-              <li>Parking: <span>6 spots</span></li>
-            </ul>
-            <div class="main-button">
-              
+        <?php if (!empty($properties)): ?>
+            <?php foreach ($properties as $property): ?>
+                <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 <?php echo strtolower(str_replace(' ', '', $property['type'])); ?>">
+                  <div class="item">
+                    <a href="property_details.php?id=<?php echo $property['id']; ?>"><img src="<?php echo $property['image_url']; ?>" alt=""></a>
+                    <span class="category"><?php echo $property['type']; ?></span>
+                    <h6>$<?php echo number_format($property['price'], 0, '.', ','); ?></h6>
+                    <h4><a href="property_details.php?id=<?php echo $property['id']; ?>"><?php echo $property['location']; ?></a></h4>
+                    <ul>
+                      <li>Bedrooms: <span><?php echo $property['bedrooms']; ?></span></li>
+                      <li>Bathrooms: <span><?php echo $property['bathrooms']; ?></span></li>
+                      <li>Area: <span><?php echo $property['area']; ?>m2</span></li>
+                      <li>Floor: <span><?php echo $property['floor']; ?></span></li>
+                      <li>Parking: <span><?php echo $property['parking']; ?></span></li>
+                    </ul>
+                    <div class="main-button">
+                      <a href="property_details.php?id=<?php echo $property['id']; ?>">Schedule a Visit</a>
+                    </div>
+                  </div>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="col-lg-12">
+                <p>No properties found matching your criteria.</p>
             </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 str">
-          <div class="item">
-            <a href="property-details.html"><img src="assets/images/property-02.jpg" alt=""></a>
-            <span class="category">Luxury Villa</span>
-            <h6>$1.180.000</h6>
-            <h4><a href="property-details.html">DAMASCUS,YAFOUR</a></h4>
-            <ul>
-              <li>Bedrooms: <span>6</span></li>
-              <li>Bathrooms: <span>5</span></li>
-              <li>Area: <span>450m2</span></li>
-              <li>Floor: <span>3</span></li>
-              <li>Parking: <span>8 spots</span></li>
-            </ul>
-            <div class="main-button">
-            
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 adv rac">
-          <div class="item">
-            <a href="property-details.html"><img src="assets/images/property-03.jpg" alt=""></a>
-            <span class="category">Luxury Villa</span>
-            <h6>$1.460.000</h6>
-            <h4><a href="property-details.html">HAMA,ALMADINEH</a></h4>
-            <ul>
-              <li>Bedrooms: <span>5</span></li>
-              <li>Bathrooms: <span>4</span></li>
-              <li>Area: <span>225m2</span></li>
-              <li>Floor: <span>3</span></li>
-              <li>Parking: <span>10 spots</span></li>
-            </ul>
-            <div class="main-button">
-             
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 str">
-          <div class="item">
-            <a href="property-details.html"><img src="assets/images/property-04.jpg" alt=""></a>
-            <span class="category">Apartment</span>
-            <h6>$584.500</h6>
-            <h4><a href="property-details.html">ALEPPO,MERDIAN</a></h4>
-            <ul>
-              <li>Bedrooms: <span>4</span></li>
-              <li>Bathrooms: <span>3</span></li>
-              <li>Area: <span>125m2</span></li>
-              <li>Floor: <span>25th</span></li>
-              <li>Parking: <span>2 cars</span></li>
-            </ul>
-            <div class="main-button">
-              
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 rac str">
-          <div class="item">
-            <a href="property-details.html"><img src="assets/images/property-05.jpg" alt=""></a>
-            <span class="category">Penthouse</span>
-            <h6>$925.600</h6>
-            <h4><a href="property-details.html">HOMS,ALHDARA</a></h4>
-            <ul>
-              <li>Bedrooms: <span>4</span></li>
-              <li>Bathrooms: <span>4</span></li>
-              <li>Area: <span>180m2</span></li>
-              <li>Floor: <span>38th</span></li>
-              <li>Parking: <span>2 cars</span></li>
-            </ul>
-            <div class="main-button">
-             
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 rac adv">
-          <div class="item">
-            <a href="property-details.html"><img src="assets/images/property-06.jpg" alt=""></a>
-            <span class="category">Modern Condo</span>
-            <h6>$450.000</h6>
-            <h4><a href="property-details.html">HAMA,ALKSOUR</a></h4>
-            <ul>
-              <li>Bedrooms: <span>3</span></li>
-              <li>Bathrooms: <span>2</span></li>
-              <li>Area: <span>165m2</span></li>
-              <li>Floor: <span>26th</span></li>
-              <li>Parking: <span>3 cars</span></li>
-            </ul>
-            <div class="main-button">
-             
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 rac str">
-          <div class="item">
-            <a href="property-details.html"><img src="assets/images/property-03.jpg" alt=""></a>
-            <span class="category">Luxury Villa</span>
-            <h6>$980.000</h6>
-            <h4><a href="property-details.html">DAMASCUS,MAZEH</a></h4>
-            <ul>
-              <li>Bedrooms: <span>8</span></li>
-              <li>Bathrooms: <span>8</span></li>
-              <li>Area: <span>550m2</span></li>
-              <li>Floor: <span>3</span></li>
-              <li>Parking: <span>12 spots</span></li>
-            </ul>
-            <div class="main-button">
-            
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 rac adv">
-          <div class="item">
-            <a href="property-details.html"><img src="assets/images/property-02.jpg" alt=""></a>
-            <span class="category">Luxury Villa</span>
-            <h6>$1.520.000</h6>
-            <h4><a href="property-details.html">DAMASCUS,ALSHALAN</a></h4>
-            <ul>
-              <li>Bedrooms: <span>12</span></li>
-              <li>Bathrooms: <span>15</span></li>
-              <li>Area: <span>380m2</span></li>
-              <li>Floor: <span>3</span></li>
-              <li>Parking: <span>14 spots</span></li>
-            </ul>
-            <div class="main-button">
-              
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 rac adv">
-          <div class="item">
-            <a href="property-details.html"><img src="assets/images/property-01.jpg" alt=""></a>
-            <span class="category">Luxury Villa</span>
-            <h6>$3.145.000</h6>
-            <h4><a href="property-details.html">DAMASCUS,ALMAZRA</a></h4>
-            <ul>
-              <li>Bedrooms: <span>10</span></li>
-              <li>Bathrooms: <span>12</span></li>
-              <li>Area: <span>860m2</span></li>
-              <li>Floor: <span>3</span></li>
-              <li>Parking: <span>10 spots</span></li>
-            </ul>
-            <div class="main-button">
-              
-            </div>
-          </div>
-        </div>
+        <?php endif; ?>
       </div>
       <div class="row">
         <div class="col-lg-12">
+          <!-- You can implement dynamic pagination here based on actual number of results -->
           <ul class="pagination">
             <li><a href="#">1</a></li>
             <li><a class="is_active" href="#">2</a></li>
@@ -292,7 +206,8 @@
   <footer>
     <div class="container">
       <div class="col-lg-12">
-       
+        <p>Copyright © 2024 Real Estate Co., Ltd. All rights reserved. 
+        </p>
       </div>
     </div>
   </footer>

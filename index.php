@@ -1,4 +1,8 @@
-
+<?php
+require_once 'functions.php';
+// يمكنك إضافة منطق خاص بالصفحة الرئيسية هنا إذا لزم الأمر
+$properties = get_properties(); // جلب العقارات لعرضها في قسم Properties
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,11 +14,7 @@
 
     <title> Real Estate </title>
 
-    
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-
-   
     <link rel="stylesheet" href="assets/css/fontawesome.css">
     <link rel="stylesheet" href="assets/css/templatemo-villa-agency.css">
     <link rel="stylesheet" href="assets/css/owl.css">
@@ -63,15 +63,24 @@
             <div class="col-12">
                 <nav class="main-nav">
                    
-                    <a href="index.html" class="logo">
+                    <a href="index.php" class="logo">
                         <h1>Villa</h1>
                     </a>
                   
                     <ul class="nav">
-                      <li><a href="index.html" class="active">Home</a></li>
-                      <li><a href="properties.html">Properties</a></li>
-                      <li><a href="contact.html">Contact Us</a></li>
-                      <li><a href="#"><i class="fa fa-calendar"></i> New Apartment</a></li>
+                      <li><a href="index.php" class="active">Home</a></li>
+                      <li><a href="properties.php">Properties</a></li>
+                      <li><a href="contact.php">Contact Us</a></li>
+                      <?php if (!check_login()): ?>
+                        <li><a href="login.php"><i class="fa fa-user"></i> Login / Register</a></li>
+                      <?php else: ?>
+                        <?php if (is_admin()): ?>
+                            <li><a href="admin_dashboard.php"><i class="fa fa-cog"></i> Admin Dashboard</a></li>
+                        <?php else: ?>
+                            <li><a href="my_orders.php"><i class="fa fa-list"></i> My Orders</a></li>
+                        <?php endif; ?>
+                        <li><a href="logout.php"><i class="fa fa-sign-out-alt"></i> Logout (<?php echo $_SESSION['username']; ?>)</a></li>
+                      <?php endif; ?>
                   </ul>   
                     <a class='menu-trigger'>
                         <span>Menu</span>
@@ -113,47 +122,48 @@
         <div class="col-lg-4">
           <div class="left-image">
             <img src="assets/images/featured.jpg" alt="">
-            <a href="property-details.html"><img src="assets/images/featured-icon.png" alt="" style="max-width: 60px; padding: 0px;"></a>
+            <a href="property-details.php?id=1"><img src="assets/images/featured-icon.png" alt="" style="max-width: 60px; padding: 0px;"></a>
           </div>
         </div>
         <div class="col-lg-5">
           <div class="section-heading">
             <h6>| Featured</h6>
-            <h2>Best Appartment &amp; Sea view</h2>
+            <h2>Best Apartment &amp; Sea view</h2>
           </div>
           <div class="accordion" id="accordionExample">
             <div class="accordion-item">
               <h2 class="accordion-header" id="headingOne">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                
+                Why choose our properties?
                 </button>
               </h2>
               <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                 <div class="accordion-body">
-                 <strong></strong>  <a href="https://www.google.com/search?q=best+free+css+templates" target="_blank"></a> </div>
+                 <strong>We offer prime locations and competitive prices.</strong> Our listings are carefully curated to ensure the best quality for our clients.
+                </div>
               </div>
             </div>
             <div class="accordion-item">
               <h2 class="accordion-header" id="headingTwo">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                
+                How do we operate?
                 </button>
               </h2>
               <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
                 <div class="accordion-body">
-                   <strong></strong> <code></code> 
+                   <strong>We connect buyers with sellers directly.</strong> Our platform simplifies the real estate process, from browsing to closing deals securely.
                 </div>
               </div>
             </div>
             <div class="accordion-item">
               <h2 class="accordion-header" id="headingThree">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                
+                What are our future plans?
                 </button>
               </h2>
               <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
                 <div class="accordion-body">
-                   <strong></strong> <code></code> 
+                   <strong>Expanding to new cities and introducing more property types.</strong> We aim to be the leading real estate agency in the region.
                 </div>
               </div>
             </div>
@@ -232,7 +242,7 @@
               <div class="col-lg-4">
                 <div class="counter">
                   <h2 class="timer count-title count-number" data-to="24" data-speed="1000"></h2>
-                  <p class="count-text ">Awwards<br>Won 2023</p>
+                  <p class="count-text ">Awards<br>Won 2023</p>
                 </div>
               </div>
             </div>
@@ -257,7 +267,7 @@
               <div class="nav-wrapper ">
                 <ul class="nav nav-tabs" role="tablist">
                   <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="appartment-tab" data-bs-toggle="tab" data-bs-target="#appartment" type="button" role="tab" aria-controls="appartment" aria-selected="true">Appartment</button>
+                    <button class="nav-link active" id="appartment-tab" data-bs-toggle="tab" data-bs-target="#appartment" type="button" role="tab" aria-controls="appartment" aria-selected="true">Apartment</button>
                   </li>
                   <li class="nav-item" role="presentation">
                     <button class="nav-link" id="villa-tab" data-bs-toggle="tab" data-bs-target="#villa" type="button" role="tab" aria-controls="villa" aria-selected="false">Villa House</button>
@@ -285,11 +295,10 @@
                       <img src="assets/images/deal-01.jpg" alt="">
                     </div>
                     <div class="col-lg-3">
-                      <h4></h4>
-                      <p>
-                      <br><br></p>
+                      <h4>Luxury Apartment</h4>
+                      <p>This exquisite apartment offers breathtaking city views and is situated in a vibrant neighborhood with easy access to amenities. Ideal for modern urban living.<br><br>Contact us today to schedule a viewing and discover your dream home.</p>
                       <div class="icon-button">
-                      
+                        <a href="contact.php"><i class="fa fa-calendar"></i> Schedule a Visit</a>
                       </div>
                     </div>
                   </div>
@@ -311,10 +320,11 @@
                       <img src="assets/images/deal-02.jpg" alt="">
                     </div>
                     <div class="col-lg-3">
-                      <h4></h4>
-                      <p></p>
+                      <h4>Spacious Villa House</h4>
+                      <p>Discover this magnificent villa, designed for comfort and luxury. Featuring expansive living areas and a beautiful garden, it's perfect for family life and entertaining guests. Located in a tranquil, upscale community.
+                      <br><br>Don't miss the opportunity to own this exceptional property. Call us now!</p>
                       <div class="icon-button">
-                        
+                        <a href="contact.php"><i class="fa fa-calendar"></i> Schedule a Visit</a>
                       </div>
                     </div>
                   </div>
@@ -336,10 +346,10 @@
                       <img src="assets/images/deal-03.jpg" alt="">
                     </div>
                     <div class="col-lg-3">
-                      <h4></h4>
-                      <p> <br><br> </p>
+                      <h4>Luxurious Penthouse</h4>
+                      <p>Elevate your lifestyle with this stunning penthouse, offering unparalleled panoramic views and sophisticated design. Enjoy exclusive amenities and spacious interiors in a prime urban location. <br><br>This is an investment in ultimate comfort and prestige. Inquire today!</p>
                       <div class="icon-button">
-                        
+                        <a href="contact.php"><i class="fa fa-calendar"></i> Schedule a Visit</a>
                       </div>
                     </div>
                   </div>
@@ -363,114 +373,32 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-lg-4 col-md-6">
-          <div class="item">
-            <a href="property-details.html"><img src="assets/images/property-01.jpg" alt=""></a>
-            <span class="category">Luxury Villa</span>
-            <h6>$2.264.000</h6>
-            <h4><a href="property-details.html">HAMA,ALBRNAWE</a></h4>
-            <ul>
-              <li>Bedrooms: <span>8</span></li>
-              <li>Bathrooms: <span>8</span></li>
-              <li>Area: <span>545m2</span></li>
-              <li>Floor: <span>3</span></li>
-              <li>Parking: <span>6 spots</span></li>
-            </ul>
-            <div class="main-button">
-             
+        <?php if (!empty($properties)): ?>
+            <?php foreach ($properties as $property): ?>
+                <div class="col-lg-4 col-md-6">
+                  <div class="item">
+                    <a href="property_details.php?id=<?php echo $property['id']; ?>"><img src="<?php echo $property['image_url']; ?>" alt=""></a>
+                    <span class="category"><?php echo $property['type']; ?></span>
+                    <h6>$<?php echo number_format($property['price'], 0, '.', ','); ?></h6>
+                    <h4><a href="property_details.php?id=<?php echo $property['id']; ?>"><?php echo $property['location']; ?></a></h4>
+                    <ul>
+                      <li>Bedrooms: <span><?php echo $property['bedrooms']; ?></span></li>
+                      <li>Bathrooms: <span><?php echo $property['bathrooms']; ?></span></li>
+                      <li>Area: <span><?php echo $property['area']; ?>m2</span></li>
+                      <li>Floor: <span><?php echo $property['floor']; ?></span></li>
+                      <li>Parking: <span><?php echo $property['parking']; ?></span></li>
+                    </ul>
+                    <div class="main-button">
+                      <a href="property_details.php?id=<?php echo $property['id']; ?>">Schedule a Visit</a>
+                    </div>
+                  </div>
+                </div>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <div class="col-lg-12">
+                <p>No properties found.</p>
             </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-          <div class="item">
-            <a href="property-details.html"><img src="assets/images/property-02.jpg" alt=""></a>
-            <span class="category">Luxury Villa</span>
-            <h6>$1.180.000</h6>
-            <h4><a href="property-details.html">DAMASCUS,YAFOUR</a></h4>
-            <ul>
-              <li>Bedrooms: <span>6</span></li>
-              <li>Bathrooms: <span>5</span></li>
-              <li>Area: <span>450m2</span></li>
-              <li>Floor: <span>3</span></li>
-              <li>Parking: <span>8 spots</span></li>
-            </ul>
-            <div class="main-button">
-            
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-          <div class="item">
-            <a href="property-details.html"><img src="assets/images/property-03.jpg" alt=""></a>
-            <span class="category">Luxury Villa</span>
-            <h6>$1.460.000</h6>
-            <h4><a href="property-details.html">HAMA,ALMADINEH</a></h4>
-            <ul>
-              <li>Bedrooms: <span>5</span></li>
-              <li>Bathrooms: <span>4</span></li>
-              <li>Area: <span>225m2</span></li>
-              <li>Floor: <span>3</span></li>
-              <li>Parking: <span>10 spots</span></li>
-            </ul>
-            <div class="main-button">
-            
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-          <div class="item">
-            <a href="property-details.html"><img src="assets/images/property-04.jpg" alt=""></a>
-            <span class="category">Apartment</span>
-            <h6>$584.500</h6>
-            <h4><a href="property-details.html">ALEPPO,MERDIAN</a></h4>
-            <ul>
-              <li>Bedrooms: <span>4</span></li>
-              <li>Bathrooms: <span>3</span></li>
-              <li>Area: <span>125m2</span></li>
-              <li>Floor: <span>25th</span></li>
-              <li>Parking: <span>2 cars</span></li>
-            </ul>
-            <div class="main-button">
-             
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-          <div class="item">
-            <a href="property-details.html"><img src="assets/images/property-05.jpg" alt=""></a>
-            <span class="category">Penthouse</span>
-            <h6>$925.600</h6>
-            <h4><a href="property-details.html">HOMS,ALHDARA</a></h4>
-            <ul>
-              <li>Bedrooms: <span>4</span></li>
-              <li>Bathrooms: <span>4</span></li>
-              <li>Area: <span>180m2</span></li>
-              <li>Floor: <span>38th</span></li>
-              <li>Parking: <span>2 cars</span></li>
-            </ul>
-            <div class="main-button">
-              
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-          <div class="item">
-            <a href="property-details.html"><img src="assets/images/property-06.jpg" alt=""></a>
-            <span class="category">Modern Condo</span>
-            <h6>$450.000</h6>
-            <h4><a href="property-details.html">HAMA,ALKSOUR</a></h4>
-            <ul>
-              <li>Bedrooms: <span>3</span></li>
-              <li>Bathrooms: <span>2</span></li>
-              <li>Area: <span>165m2</span></li>
-              <li>Floor: <span>26th</span></li>
-              <li>Parking: <span>3 cars</span></li>
-            </ul>
-            <div class="main-button">
-             
-            </div>
-          </div>
-        </div>
+        <?php endif; ?>
       </div>
     </div>
   </div>
@@ -492,7 +420,6 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-7">
-          
           <div class="row">
             <div class="col-lg-6">
               <div class="item phone">
@@ -509,7 +436,7 @@
           </div>
         </div>
         <div class="col-lg-5">
-          <form id="contact-form" action="" method="post">
+          <form id="contact-form" action="contact_process.php" method="post">
             <div class="row">
               <div class="col-lg-12">
                 <fieldset>
@@ -550,7 +477,8 @@
   <footer>
     <div class="container">
       <div class="col-lg-8">
-        
+        <p>Copyright © 2024 Real Estate Co., Ltd. All rights reserved. 
+        </p>
       </div>
     </div>
   </footer>

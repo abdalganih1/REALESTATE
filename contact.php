@@ -1,3 +1,6 @@
+<?php
+require_once 'functions.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,12 +10,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <title>Villa Agency - Contact Page</title>
+    <title> Real Estate - Contact </title>
 
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-
-   
     <link rel="stylesheet" href="assets/css/fontawesome.css">
     <link rel="stylesheet" href="assets/css/templatemo-villa-agency.css">
     <link rel="stylesheet" href="assets/css/owl.css">
@@ -60,16 +60,25 @@
         <div class="row">
             <div class="col-12">
                 <nav class="main-nav">
-                    <a href="index.html" class="logo">
+                    <a href="index.php" class="logo">
                         <h1>Villa</h1>
                     </a>
 
                     <ul class="nav">
-                      <li><a href="index.html">Home</a></li>
-                      <li><a href="properties.html">Properties</a></li>
+                      <li><a href="index.php">Home</a></li>
+                      <li><a href="properties.php">Properties</a></li>
                      
-                      <li><a href="contact.html" class="active">Contact Us</a></li>
-                      <li><a href="#"><i class="fa fa-calendar"></i> New Apartment</a></li>
+                      <li><a href="contact.php" class="active">Contact Us</a></li>
+                      <?php if (!check_login()): ?>
+                        <li><a href="login.php"><i class="fa fa-user"></i> Login / Register</a></li>
+                      <?php else: ?>
+                        <?php if (is_admin()): ?>
+                            <li><a href="admin_dashboard.php"><i class="fa fa-cog"></i> Admin Dashboard</a></li>
+                        <?php else: ?>
+                            <li><a href="my_orders.php"><i class="fa fa-list"></i> My Orders</a></li>
+                        <?php endif; ?>
+                        <li><a href="logout.php"><i class="fa fa-sign-out-alt"></i> Logout (<?php echo $_SESSION['username']; ?>)</a></li>
+                      <?php endif; ?>
                   </ul>   
                     <a class='menu-trigger'>
                         <span>Menu</span>
@@ -101,7 +110,7 @@
             <h6>| Contact Us</h6>
             <h2>Get In Touch With Our Agents</h2>
           </div>
-          <p></p>
+          <p>Feel free to reach out to us with any inquiries, property viewing requests, or general questions. Our dedicated team is here to assist you in finding your ideal real estate solution.</p>
           <div class="row">
             <div class="col-lg-12">
               <div class="item phone">
@@ -118,7 +127,7 @@
           </div>
         </div>
         <div class="col-lg-6">
-          <form id="contact-form" action="" method="post">
+          <form id="contact-form" action="contact_process.php" method="post">
             <div class="row">
               <div class="col-lg-12">
                 <fieldset>
@@ -154,7 +163,8 @@
         </div>
         <div class="col-lg-12">
           <div id="map">
-           
+            <!-- Google Maps Embed Code -->
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d102078.68305786576!2d36.657519642006765!3d35.15833058866164!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x152277d32c53a653%3A0x63359d997a44f54e!2sHama%2C%20Syria!5e0!3m2!1sen!2sus!4v1701234567890!5m2!1sen!2sus" width="100%" height="500px" frameborder="0" style="border:0; border-radius: 10px; box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.15);" allowfullscreen=""></iframe>
           </div>
         </div>
       </div>
@@ -164,7 +174,8 @@
   <footer>
     <div class="container">
       <div class="col-lg-12">
-        
+        <p>Copyright © 2024 Real Estate Co., Ltd. All rights reserved. 
+        </p>
       </div>
     </div>
   </footer>
