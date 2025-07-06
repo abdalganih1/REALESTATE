@@ -112,25 +112,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       </div>
     </div>
     <div class="sub-header">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-8 col-md-8">
-            <ul class="info">
-              <li><i class="fa fa-envelope"></i> info@realestate.com</li>
-              <li><i class="fa fa-map"></i> HAMA</li>
-            </ul>
-          </div>
-          <div class="col-lg-4 col-md-4">
-            <ul class="social-links">
-              <li><a href="#"><i class="fab fa-facebook"></i></a></li>
-              <li><a href="https://x.com/minthu" target="_blank"><i class="fab fa-twitter"></i></a></li>
-              <li><a href="#"><i class="fab fa-linkedin"></i></a></li>
-              <li><a href="#"><i class="fab fa-instagram"></i></a></li>
-            </ul>
-          </div>
+    <div class="container">
+      <div class="row">
+        <!-- Adjusted columns for info and social links, added a new column for language switcher -->
+        <div class="col-lg-7 col-md-7">
+          <ul class="info">
+            <li><i class="fa fa-envelope"></i> info@realestate.com</li>
+            <li><i class="fa fa-map"></i> HAMA</li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-md-3">
+          <ul class="social-links">
+            <li><a href="#"><i class="fab fa-facebook"></i></a></li>
+            <li><a href="https://x.com/minthu" target="_blank"><i class="fab fa-twitter"></i></a></li>
+            <li><a href="#"><i class="fab fa-linkedin"></i></a></li>
+            <li><a href="#"><i class="fab fa-instagram"></i></a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2 col-md-2">
+            <div class="lang-switcher">
+                <div id="google_translate_element"></div> <!-- Hidden widget div -->
+                <button onclick="translatePage('ar')">العربية</button>
+            </div>
         </div>
       </div>
     </div>
+  </div>
     <header class="header-area header-sticky">
       <div class="container">
           <div class="row">
@@ -192,5 +199,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <script src="assets/js/owl-carousel.js"></script>
     <script src="assets/js/counter.js"></script>
     <script src="assets/js/custom.js"></script>
+
+  <!-- START Google Translate Script -->
+  <script type="text/javascript">
+    // Initialize Google Translate widget
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en', // Original language of the page
+        includedLanguages: 'ar', // Languages available for translation (Arabic only in this case)
+        layout: google.translate.TranslateElement.FloatEmpty // Hides the default dropdown
+      }, 'google_translate_element');
+    }
+
+    // Function to trigger translation to Arabic
+    function translatePage(lang) {
+        var googleSelect = document.querySelector('#google_translate_element select');
+        if (googleSelect) {
+            googleSelect.value = lang;
+            googleSelect.dispatchEvent(new Event('change')); // Trigger the change event
+        } else {
+            console.error('Google Translate element not found or not initialized yet.');
+            // Fallback for immediate click if the widget loads slowly
+            // You might want to reload the script or show a message
+        }
+    }
+  </script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <!-- END Google Translate Script -->
 </body>
 </html>
