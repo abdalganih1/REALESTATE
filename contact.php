@@ -18,7 +18,40 @@ require_once 'functions.php';
     <link rel="stylesheet" href="assets/css/owl.css">
     <link rel="stylesheet" href="assets/css/animate.css">
     <link rel="stylesheet"href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
+    <!-- START Custom CSS for Google Translate button and hiding default widget -->
+    <style>
+        .lang-switcher {
+            text-align: right;
+            margin-top: 10px;
+        }
 
+        .lang-switcher button {
+            background-color: #f35525;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .lang-switcher button:hover {
+            background-color: #e04a1f;
+        }
+
+        #google_translate_element {
+            display: none;
+        }
+
+        .goog-te-banner-frame.skiptranslate {
+            display: none !important;
+        }
+        body {
+            top: 0px !important;
+        }
+    </style>
+    <!-- END Custom CSS for Google Translate button and hiding default widget -->
   </head>
 
 <body>
@@ -38,19 +71,26 @@ require_once 'functions.php';
   <div class="sub-header">
     <div class="container">
       <div class="row">
-        <div class="col-lg-8 col-md-8">
+        <!-- Adjusted columns for info and social links, added a new column for language switcher -->
+        <div class="col-lg-7 col-md-7">
           <ul class="info">
             <li><i class="fa fa-envelope"></i> info@realestate.com</li>
             <li><i class="fa fa-map"></i> HAMA</li>
           </ul>
         </div>
-        <div class="col-lg-4 col-md-4">
+        <div class="col-lg-3 col-md-3">
           <ul class="social-links">
             <li><a href="#"><i class="fab fa-facebook"></i></a></li>
             <li><a href="https://x.com/minthu" target="_blank"><i class="fab fa-twitter"></i></a></li>
             <li><a href="#"><i class="fab fa-linkedin"></i></a></li>
             <li><a href="#"><i class="fab fa-instagram"></i></a></li>
           </ul>
+        </div>
+        <div class="col-lg-2 col-md-2">
+            <div class="lang-switcher">
+                <div id="google_translate_element"></div> <!-- Hidden widget div -->
+                <button onclick="translatePage('ar')">العربية</button>
+            </div>
         </div>
       </div>
     </div>
@@ -187,6 +227,31 @@ require_once 'functions.php';
   <script src="assets/js/owl-carousel.js"></script>
   <script src="assets/js/counter.js"></script>
   <script src="assets/js/custom.js"></script>
+
+  <!-- START Google Translate Script -->
+  <script type="text/javascript">
+    // Initialize Google Translate widget
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en', // Original language of the page
+        includedLanguages: 'ar', // Languages available for translation (Arabic only in this case)
+        layout: google.translate.TranslateElement.FloatEmpty // Hides the default dropdown
+      }, 'google_translate_element');
+    }
+
+    // Function to trigger translation to Arabic
+    function translatePage(lang) {
+        var googleSelect = document.querySelector('#google_translate_element select');
+        if (googleSelect) {
+            googleSelect.value = lang;
+            googleSelect.dispatchEvent(new Event('change')); // Trigger the change event
+        } else {
+            console.error('Google Translate element not found or not initialized yet.');
+        }
+    }
+  </script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <!-- END Google Translate Script -->
 
   </body>
 </html>

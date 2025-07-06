@@ -65,6 +65,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             margin-top: 20px;
         }
     </style>
+        <!-- START Custom CSS for Google Translate button and hiding default widget -->
+    <style>
+        .lang-switcher {
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        .lang-switcher button {
+            background-color: #f35525;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .lang-switcher button:hover {
+            background-color: #e04a1f;
+        }
+
+        #google_translate_element {
+            display: none;
+        }
+
+        .goog-te-banner-frame.skiptranslate {
+            display: none !important;
+        }
+        body {
+            top: 0px !important;
+        }
+    </style>
+    <!-- END Custom CSS for Google Translate button and hiding default widget -->
 </head>
 <body>
     <div id="js-preloader" class="js-preloader">

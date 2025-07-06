@@ -1826,3 +1826,36 @@ body {
     margin-right: 100px;
   }
 }
+/* Custom CSS for Google Translate button and hiding default widget */
+.lang-switcher {
+    text-align: right; /* Align button to the right */
+    margin-top: 10px; /* Adjust spacing */
+}
+
+.lang-switcher button {
+    background-color: #f35525;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.lang-switcher button:hover {
+    background-color: #e04a1f;
+}
+
+/* Hide the default Google Translate widget element */
+#google_translate_element {
+    display: none;
+}
+
+/* Hide the Google Translate toolbar/banner that appears after translation */
+.goog-te-banner-frame.skiptranslate {
+    display: none !important;
+}
+body {
+    top: 0px !important; /* This helps remove the extra space left by the hidden banner */
+}
